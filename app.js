@@ -20,10 +20,14 @@ function cl(){
 	term.clear()
 }
 
+function termrepeat(n, horizontal) { 
+	if (horizontal) return " ".repeat(Math.round(n / 2) - 10);
+	else return "\n".repeat(Math.round(n / 2) - 2);
+}
+
 function preloader(s_msg, s_style){
 	this.start = function(){
 		var _ = this;
-		var render = s_style;
 
 		function startAnim(arr, interval) {
 			var len = arr.length, i = 0;
@@ -35,7 +39,7 @@ function preloader(s_msg, s_style){
 			_.timer = setInterval(drawTick, interval);
 		}
 
-		var frames = render.map(function(c){ return sprintf('  \u001b[96m%s ', c); });
+		var frames = s_style.map(function(c){ return sprintf(termrepeat(term.width, true) + '  \u001b[96m%s ', c); });
 		startAnim(frames, 70);
 	};
 
@@ -60,7 +64,7 @@ function dlog(text){
 function init(){
 	cl();
 	var loader = new preloader("Loading ".italic.white, ["◜","◠","◝","◞","◡","◟"]);
-	console.log('\n');
+	console.log(termrepeat(term.height, false));
 	loader.start();
 	var _c = 4;
 	var _dot = "";
