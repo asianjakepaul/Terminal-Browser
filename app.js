@@ -59,7 +59,7 @@ function dlog(text){
 
 function init(){
 	cl();
-	var loader = new preloader("Loading ".white, ["◜","◠","◝","◞","◡","◟"]);
+	var loader = new preloader("Loading ".italic.white, ["◜","◠","◝","◞","◡","◟"]);
 	console.log('\n');
 	loader.start();
 	var _c = 4;
@@ -67,7 +67,7 @@ function init(){
 	setInterval(function(){
 		_c--;
 		_dot += ".";
-		loader.message("Loading".white + _dot.white + " ");
+		loader.message("Loading".italic.white + _dot.italic.white + " ");
 		if (_c === 0){
 			loader.stop();
 			cl();
@@ -79,13 +79,11 @@ function init(){
 
 function renderUi(){
 	cl();
-  //stuff
 }
 
 function main(){
 	dlog("Main");
 	renderUi();
-  //more stuff
 }
 
 process.stdout.on('resize', function() {
