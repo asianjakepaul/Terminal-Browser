@@ -30,23 +30,18 @@ function termrepeat(n, horizontal) {
 function preloader(s_msg, s_style){
 	this.start = function(){
 		var _ = this;
-
-		function startAnim(arr, interval) {
-			var len = arr.length, i = 0;
-			interval = interval || 100;
+		function startAnim(arr) {
+			var len = arr.length, i = 0, interval = 90;
 			var drawTick = function(){
-				var str = arr[i++ % len];
-				process.stdout.write('\u001b[0G' + str + '\u001b[90m' + s_msg + '\u001b[0m');
+				var _s = arr[i++ % len];
+				process.stdout.write('\u001b[0G' + _s + '\u001b[90m' + s_msg + '\u001b[0m');
 			};
 			_.timer = setInterval(drawTick, interval);
 		}
-
 		var frames = s_style.map(function(c){ return sprintf(termrepeat(term.width, true) + '  \u001b[96m%s ', c); });
 		startAnim(frames, 70);
 	};
-
-	this.message = function(message){ s_msg = message; };
-
+	this.message = function(msg){ s_msg = msg; };
 	this.stop = function(){
 		process.stdout.write('\u001b[0G\u001b[2K');
 		clearInterval(this.timer);
@@ -57,7 +52,7 @@ function dlog(text){
 	_debug = _debug.map(v => v.toLowerCase());
 	args = args.map(v => v.toLowerCase());
 	if (_debug.some(r => args.indexOf(r) >= 0)){
-		if (isset(text)) console.log(">> DEBUG".yellow + ": ".red + text.cyan);
+		if (isset(text)) console.log(">> DEBUG".yellow.bgBlack + ": ".red.bgBlack + text.cyan.bgBlack);
 		return true;
 	}
 	else return false;
