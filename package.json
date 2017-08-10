@@ -1,1 +1,26 @@
-
+{
+	"name": "Terminal-Browser",
+	"description": "A nice terminal browser written in NodeJS",
+	"version": "1.0.0",
+	"main": "app.js",
+	"scripts": {
+		"start": "node app.js",
+		"debug": "node app.js --debug"
+	},
+	"dependencies": {
+		"colors": "^1.1.2",
+		"terminal-kit": "^1.11.2"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/NLDev/Terminal-Browser"
+	},
+	"maintainers": [{
+		"name": "NullDev",
+		"email": "admin@nulldev.org",
+		"web": "nulldev.org"
+	}],
+	"license": "Apache-2.0",
+	"author": "NullDev",
+	"homepage": "https://nulldev.org"
+}
