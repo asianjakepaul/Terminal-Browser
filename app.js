@@ -42,7 +42,7 @@ function getTS() {
 	month = (month < 10 ? "0" : "") + month;
 	day   = (day   < 10 ? "0" : "") + day;
 
-    return " [" + day + "." + month + "." + year + " " + hour + ":" + min + ":" + sec + "] - ";
+    return "[" + day + "." + month + "." + year + " " + hour + ":" + min + ":" + sec + "] - ";
 }
 
 function dlog(text){
