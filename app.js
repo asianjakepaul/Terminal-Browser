@@ -42,14 +42,18 @@ function getTS() {
 	month = (month < 10 ? "0" : "") + month;
 	day   = (day   < 10 ? "0" : "") + day;
 
-    return "[" + day + "." + month + "." + year + " " + hour + ":" + min + ":" + sec + "] - ";
+    return "[" + day + "." + month + "." + year + " " + hour + ":" + min + ":" + sec + "]";
 }
 
 function dlog(text){
 	_debug = _debug.map(v => v.toLowerCase());
 	args = args.map(v => v.toLowerCase());
 	if (_debug.some(r => args.indexOf(r) >= 0)){
-		if (isset(text)) console.log(">> DEBUG".yellow.bgBlack + ": ".red.bgBlack + getTS().green.bgBlack.italic + text.cyan.bgBlack);
+		if (isset(text)) console.log(
+			">> DEBUG".yellow.bgBlack    + ": ".red.bgBlack + 
+			getTS().green.bgBlack.italic + " - ".white.bgBlack.italic + 
+			text.cyan.bgBlack
+		);
 		return true;
 	}
 	else return false;
