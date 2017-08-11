@@ -27,6 +27,34 @@ function termrepeat(n, horizontal) {
 	else return "\n".repeat(Math.round(n / 2) - 2);
 }
 
+function getTS() {
+	var date  = new Date();
+	var hour  = date.getHours(),
+		min   = date.getMinutes(),
+		sec   = date.getSeconds(),
+		year  = date.getFullYear(),
+		month = date.getMonth() + 1,
+		day   = date.getDate();
+
+	hour  = (hour  < 10 ? "0" : "") + hour;
+	min   = (min   < 10 ? "0" : "") + min;
+	sec   = (sec   < 10 ? "0" : "") + sec;
+	month = (month < 10 ? "0" : "") + month;
+	day   = (day   < 10 ? "0" : "") + day;
+
+    return " [" + day + "." + month + "." + year + " " + hour + ":" + min + ":" + sec + "] - ";
+}
+
+function dlog(text){
+	_debug = _debug.map(v => v.toLowerCase());
+	args = args.map(v => v.toLowerCase());
+	if (_debug.some(r => args.indexOf(r) >= 0)){
+		if (isset(text)) console.log(">> DEBUG".yellow.bgBlack + ": ".red.bgBlack + getTS().green.bgBlack.italic + text.cyan.bgBlack);
+		return true;
+	}
+	else return false;
+}
+
 function preloader(s_msg, s_style){
 	this.start = function(){
 		var _ = this;
@@ -46,16 +74,6 @@ function preloader(s_msg, s_style){
 		process.stdout.write('\u001b[0G\u001b[2K');
 		clearInterval(this.timer);
 	};
-}
-
-function dlog(text){
-	_debug = _debug.map(v => v.toLowerCase());
-	args = args.map(v => v.toLowerCase());
-	if (_debug.some(r => args.indexOf(r) >= 0)){
-		if (isset(text)) console.log(">> DEBUG".yellow.bgBlack + ": ".red.bgBlack + text.cyan.bgBlack);
-		return true;
-	}
-	else return false;
 }
 
 function init(){
