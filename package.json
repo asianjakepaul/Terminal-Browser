@@ -5,7 +5,7 @@
 	"main": "app.js",
 	"scripts": {
 		"start": "node app.js",
-		"debug": "node app.js --debug"
+		"test": "node app.js --debug"
 	},
 	"dependencies": {
 		"colors": "^1.1.2",
@@ -15,11 +15,13 @@
 		"type": "git",
 		"url": "https://github.com/NLDev/Terminal-Browser"
 	},
-	"maintainers": [{
-		"name": "NullDev",
-		"email": "admin@nulldev.org",
-		"web": "nulldev.org"
-	}],
+	"maintainers": [
+		{
+			"name": "NullDev",
+			"email": "admin@nulldev.org",
+			"web": "nulldev.org"
+		}
+	],
 	"license": "Apache-2.0",
 	"author": "NullDev",
 	"homepage": "https://nulldev.org"
