@@ -1,8 +1,9 @@
 "use strict";
 
-var _c      = require('colors');
-var term    = require('terminal-kit').terminal
-var sprintf = require('util').format;
+var _c       = require('colors');
+var term     = require('terminal-kit').terminal
+var sprintf  = require('util').format;
+var readline = require('readline');
 
 ////////////////////////////////
 //----------------------------//
@@ -10,7 +11,12 @@ var sprintf = require('util').format;
 //----------------------------//
 ////////////////////////////////
 
-var args    = process.argv;
+var args = process.argv;
+
+var rl = readline.createInterface({
+	input:  process.stdin,
+	output: process.stdout
+});
 
 //Start the script with the arguments --debug or -d to see logs (e.g.: node app.js --debug)
 var _debug  = ["--debug", "-d"];
@@ -107,7 +113,11 @@ function init(){
 function renderUi(){
 	cl();
 	dlog("Render Browser UI");
-
+	process.stdout.write("\n");
+	rl.question(" URL: ", (a) => {
+		dlog("Got: " + a);
+  		rl.close();
+	});
 }
 
 function main(){
