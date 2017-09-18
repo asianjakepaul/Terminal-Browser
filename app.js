@@ -4,6 +4,7 @@ var _c       = require('colors');
 var term     = require('terminal-kit').terminal
 var sprintf  = require('util').format;
 var readline = require('readline');
+var validate = require('./validate').validate;
 
 ////////////////////////////////
 //----------------------------//
@@ -111,17 +112,40 @@ function init(){
 }
 
 function renderUi(){
-	cl();
 	dlog("Render Browser UI");
 	process.stdout.write("\n");
 	rl.question(" URL: ", (a) => {
 		dlog("Got: " + a);
-  		rl.close();
+		getValRes(a);
 	});
+}
+
+function getValRes(url){
+	var res = validate(url);
+	var response = null;
+	switch(res){
+		case 0: {
+			cl();
+			response = " Seems like this URL is not valid. Try again";
+			console.log("\n" + response.red);
+			renderUi();
+			break;
+		}
+		case 1: {
+			rl.close();
+			cl();
+			response = " Valid.";
+			console.log("\n" + response.green);
+			doRender(url);
+			break;
+		}
+	}
 }
 
 function main(){
 	dlog("Main");
+	cl();
+	process.stdout.write("\n");
 	renderUi();
 }
 
