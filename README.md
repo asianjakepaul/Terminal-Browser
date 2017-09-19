@@ -1,5 +1,10 @@
 # Terminal-Browser
+
+<p style="text-align:center;background-color:#333;">
+<img src="https://nulldev.org/img/server.gif" height="300px" width="auto" />  
+<br>
 NodeJS Program to surf the web in your terminal
+</p>
 
 Here is almost nothing yet and I am not sure if this will work as expected...
 
