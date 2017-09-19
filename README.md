@@ -1,8 +1,8 @@
 # Terminal-Browser
 
-<p style="text-align:center;background-color:#333;">
+<p align="center">
 <img src="https://nulldev.org/img/server.gif" height="300px" width="auto" />  
-<br>
+<br><br>
 NodeJS Program to surf the web in your terminal
 </p>
 
