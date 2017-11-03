@@ -1,10 +1,11 @@
-"use strict";
-
-var _c       = require('colors');
-var term     = require('terminal-kit').terminal
-var sprintf  = require('util').format;
-var readline = require('readline');
-var validate = require('./validate').validate;
+const colors   = require('colors');
+const term     = require('terminal-kit').terminal;
+const sprintf  = require('util').format;
+const readLine = require('readline');
+const {validateUrl} = require('./utils');
+const dateFormat = require('dateformat');
+const request = require('request');
+const hermit = require('hermit');
 
 ////////////////////////////////
 //----------------------------//
@@ -12,146 +13,132 @@ var validate = require('./validate').validate;
 //----------------------------//
 ////////////////////////////////
 
-var args = process.argv;
+/**
+ * Formats a date object to a string.
+ * @param date - A date object (default: Date.now())
+ * @param format - The format to use (default: "dd.mm.yyyy hh:MM:ss").
+ * @returns {String} - A date represented as string.
+ */
+const getTimeStamp = (date = Date.now(), format = "dd.mm.yyyy hh:MM:ss") => {
+  return dateFormat(date, format);
+};
 
-var rl = readline.createInterface({
-	input:  process.stdin,
-	output: process.stdout
+class PreLoader {
+  constructor(message, style) {
+    this._message = message;
+    this._style = style;
+    this._timer = null;
+    this._frames = this._style.map((c) => {
+      return sprintf(this.termRepeat(term.width, true) + '  \u001b[96m%s ', c);
+    });
+  }
+
+  termRepeat(width, horizontal) {
+    return horizontal ? " ".repeat(Math.round(width / 2) - 10) : "\n".repeat(Math.round(width / 2) - 2);
+  };
+
+  stop() {
+    process.stdout.write('\u001b[0G\u001b[2K');
+    clearInterval(this._timer);
+  };
+
+  start() {
+    const len = this._frames.length;
+    let i = 0;
+    const draw = () => {
+      process.stdout.write('\u001b[0G' + this._frames[i++ % len] + '\u001b[90m' + this._message + '\u001b[0m');
+    };
+    this._timer = setInterval(draw, 90);
+  };
+
+
+  set message(message) {
+    this._message = message;
+  }
+}
+
+class TerminalBrowser {
+
+  constructor(options) {
+    this._debug = options.debug || false;
+    this._readLine = readLine.createInterface({
+      input:  process.stdin,
+      output: process.stdout
+    });
+    this._init();
+  }
+
+  debug(message) {
+    if (this._debug) {
+      const tag = ">> DEBUG".yellow.bgBlack;
+      const colon = ": ".red.bgBlack;
+      const dash = " - ".white.bgBlack.italic;
+      const timestamp = `[${getTimeStamp()}]`.green.bgBlack.italic;
+      message = message.cyan.bgBlack;
+      console.log(tag + colon + dash + timestamp + message);
+    }
+  }
+
+  _init() {
+    const preLoader = new PreLoader("Loading ".italic.white, ["◡","◟","◜","◠","◝","◞"]);
+    this.debug("Vertical Center the loading screen");
+    this.debug("Start Loader");
+    preLoader.start();
+    let counter = 0;
+
+    const tick = () => {
+      counter++;
+      preLoader.message = "Loading".italic.white + ".".repeat(counter).italic.white + " ";
+      if (counter >= 5) {
+        preLoader.stop();
+        clearInterval(timer);
+        this.onPreLoadFinished();
+      }
+    };
+    const timer = setInterval(tick, 500);
+  }
+
+  clear() {
+    term.clear()
+  }
+
+  onPreLoadFinished() {
+    this.clear();
+    this.main();
+  }
+
+  main() {
+    this._readLine.question(" Enter a valid URL: ", (url) => {
+      this.debug(`Got answer: ${url}`);
+
+      if (validateUrl(url)) {
+        request(url, (error, response, body) => {
+          if (error) {
+            console.log('Error loading URL!.'.red);
+            this.main();
+          }
+          hermit(body, (err, res) => {
+            if (err) {
+              console.log('Error rendering response!.'.red);
+              this.main()
+            }
+            console.log(res);
+            console.log('='.repeat(200));
+            this.main();
+          })
+        });
+      } else {
+        console.log('That doesn\'t seem like a valid URL.'.red);
+        this.main();
+      }
+
+    });
+  }
+}
+
+const debug = !!process.argv.find(arg => {
+  arg = arg.toLowerCase();
+  return arg === '-d' || arg === '--debug';
 });
 
-//Start the script with the arguments --debug or -d to see logs (e.g.: node app.js --debug)
-var _debug  = ["--debug", "-d"];
-
-function isset(_var){ return (_var && _var != null && _var != "" ) ? true : false; }
-
-function cl(){ 
-	process.stdout.write('\x1Bc');
-	term.clear()
-}
-
-function termrepeat(n, horizontal) { 
-	if (horizontal) return " ".repeat(Math.round(n / 2) - 10);
-	else return "\n".repeat(Math.round(n / 2) - 2);
-}
-
-function getTS() {
-	var date  = new Date();
-	var hour  = date.getHours(),
-		min   = date.getMinutes(),
-		sec   = date.getSeconds(),
-		year  = date.getFullYear(),
-		month = date.getMonth() + 1,
-		day   = date.getDate();
-
-	hour  = (hour  < 10 ? "0" : "") + hour;
-	min   = (min   < 10 ? "0" : "") + min;
-	sec   = (sec   < 10 ? "0" : "") + sec;
-	month = (month < 10 ? "0" : "") + month;
-	day   = (day   < 10 ? "0" : "") + day;
-
-    return "[" + day + "." + month + "." + year + " " + hour + ":" + min + ":" + sec + "]";
-}
-
-function dlog(text){
-	_debug = _debug.map(v => v.toLowerCase());
-	args = args.map(v => v.toLowerCase());
-	if (_debug.some(r => args.indexOf(r) >= 0)){
-		if (isset(text)) console.log(
-			">> DEBUG".yellow.bgBlack    + ": ".red.bgBlack + 
-			getTS().green.bgBlack.italic + " - ".white.bgBlack.italic + 
-			text.cyan.bgBlack
-		);
-		return true;
-	}
-	else return false;
-}
-
-function preloader(s_msg, s_style){
-	this.start = function(){
-		var _ = this;
-		function startAnim(arr) {
-			var len = arr.length, i = 0, interval = 90;
-			var drawTick = function(){
-				var _s = arr[i++ % len];
-				process.stdout.write('\u001b[0G' + _s + '\u001b[90m' + s_msg + '\u001b[0m');
-			};
-			_.timer = setInterval(drawTick, interval);
-		}
-		var frames = s_style.map(function(c){ return sprintf(termrepeat(term.width, true) + '  \u001b[96m%s ', c); });
-		startAnim(frames, 70);
-	};
-	this.message = function(msg){ s_msg = msg; };
-	this.stop = function(){
-		process.stdout.write('\u001b[0G\u001b[2K');
-		clearInterval(this.timer);
-	};
-}
-
-function init(){
-	cl();
-	var loader = new preloader("Loading ".italic.white, ["◡","◟","◜","◠","◝","◞"]);
-	dlog("Vertical Center the loading screen")
-	console.log(termrepeat(term.height, false));
-	dlog("Start Loader");
-	loader.start();
-	var _c = 4;
-	var _dot = "";
-	setInterval(function(){
-		_c--;
-		_dot += ".";
-		loader.message("Loading".italic.white + _dot.italic.white + " ");
-		dlog("Loop: " + _c);
-		if (_c === 0){
-			dlog("Stopping loader");
-			loader.stop();
-			dlog("Started!");
-			main();
-			clearInterval(this);
-		}
-	}, 500);
-}
-
-function renderUi(){
-	dlog("Render Browser UI");
-	process.stdout.write("\n");
-	rl.question(" URL: ", (a) => {
-		dlog("Got: " + a);
-		getValRes(a);
-	});
-}
-
-function getValRes(url){
-	var res = validate(url);
-	var response = null;
-	switch(res){
-		case 0: {
-			cl();
-			response = " Seems like this URL is not valid. Try again";
-			console.log("\n" + response.red);
-			renderUi();
-			break;
-		}
-		case 1: {
-			rl.close();
-			cl();
-			response = " Valid.";
-			console.log("\n" + response.green);
-			doRender(url);
-			break;
-		}
-	}
-}
-
-function main(){
-	dlog("Main");
-	cl();
-	process.stdout.write("\n");
-	renderUi();
-}
-
-process.stdout.on('resize', function() {
-	//Re-Render
-});
-
-dlog("Started!");
-init();
+const terminal = new TerminalBrowser({debug: debug});

@@ -9,6 +9,9 @@
 	},
 	"dependencies": {
 		"colors": "^1.1.2",
+		"dateformat": "^3.0.2",
+		"hermit": "^0.2.2",
+		"request": "^2.83.0",
 		"terminal-kit": "^1.11.2"
 	},
 	"repository": {
